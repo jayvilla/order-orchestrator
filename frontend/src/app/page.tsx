@@ -11,13 +11,19 @@ export default function HomePage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ product }),
     });
+
     const data = await res.json();
-    setOrders((o) => [...o, data]);
+
+    // ✅ store only the actual order object
+    setOrders((prev) => [...prev, data.order]);
   }
 
   async function refreshOrder(id: string) {
+    if (!id) return; // safety guard
     const res = await fetch(`http://localhost:8000/orders/${id}`);
     const data = await res.json();
+
+    // ✅ update the matching order in state
     setOrders((prev) => prev.map((o) => (o.id === id ? data : o)));
   }
 
@@ -31,6 +37,7 @@ export default function HomePage() {
   return (
     <main className="p-6">
       <h1 className="text-2xl mb-4 font-bold">Order Tracker Lite</h1>
+
       <div className="flex gap-2 mb-6">
         <input
           value={product}
